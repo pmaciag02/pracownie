@@ -1,0 +1,1 @@
+("7.2" racket ("b56dcbe5e5c6843fa1f96b36f9a7308322190c94" . "0265064b912ef29e348a89cc46cbf893d746bd5e") #"/home/patryk/studia/metodyp/zajecia9/lecimy/syntax.rkt" (collects #"plait" #"main.rkt") (collects #"racket" #"main.rkt") (collects #"racket" #"runtime-config.rkt") (indirect collects #"racket" #"match" #"gen-match.rkt") (indirect collects #"racket" #"match" #"parse.rkt"))

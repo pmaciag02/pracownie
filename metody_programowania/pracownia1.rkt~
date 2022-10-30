@@ -1,0 +1,63 @@
+#lang racket
+
+
+
+(define-struct column-info (name type) #:transparent)
+
+(define-struct table (schema rows) #:transparent)
+
+(define cities
+  (table
+   (list (column-info 'city    'string)
+         (column-info 'country 'string)
+         (column-info 'area    'number)
+         (column-info 'capital 'boolean))
+   (list (list "Wrocław" "Poland"  293 #f)
+         (list "Warsaw"  "Poland"  517 #t)
+         (list "Poznań"  "Poland"  262 #f)
+         (list "Berlin"  "Germany" 892 #t)
+         (list "Munich"  "Germany" 310 #f)
+         (list "Paris"   "France"  105 #t)
+         (list "Rennes"  "France"   50 #f))))
+
+(define countries
+  (table
+   (list (column-info 'country 'string)
+         (column-info 'population 'number))
+   (list (list "Poland" 38)
+         (list "Germany" 83)
+         (list "France" 67)
+         (list "Spain" 47))))
+
+(define (empty-table columns) (table columns '()))
+
+; Wstawianie
+
+(define (table-insert row tab)
+  (define (foo xs ys)
+    (cond [(and (null? xs) (null? ys))
+           #t]
+          [(null? xs)
+           #f]
+          [(null? ys)
+           #f]
+          [(and (equal? 'number (column-info-type (car xs))) (number? (car ys)))
+           (foo (cdr xs) (cdr ys))]
+          [(and (equal? 'string (column-info-type (car xs))) (string? (car ys)))
+           (foo (cdr xs) (cdr ys))]
+          [(and (equal? 'symbol (column-info-type (car xs))) (symbol? (car ys)))
+           (foo (cdr xs) (cdr ys))]
+          [(and (equal? 'boolean (column-info-type (car xs))) (boolean? (car ys)))
+           (foo (cdr xs) (cdr ys))]
+          [else
+           #f]))
+  (if (foo (table-schema tab) row)
+      (table (table-schema tab) (append (list row) (table-rows tab)))
+      #f));throw exception
+           
+
+; Projekcja
+
+(define (table-project cols tab)
+  (define foo
+

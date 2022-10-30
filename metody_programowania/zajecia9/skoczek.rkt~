@@ -1,0 +1,80 @@
+#lang plait
+
+; 4 x 4
+; +---+---+---+---+
+; |   | X |   |   |
+; +---+---+---+---+
+; |   |   |   | X |
+; +---+---+---+---+
+; | X |   |   |   |
+; +---+---+---+---+
+; |   |   | X |   |
+; +---+---+---+---+
+
+(define (concat xs)
+  (if (empty? xs)
+      empty
+      (append (first xs) (concat (rest xs)))))
+
+(define (valid-pos? i board)
+  (local
+    [(define (valid-it i board)
+       (type-case (Listof Number) board
+         [empty #t]
+         [(cons x board)
+          (and (not (= i x))
+               (valid-it i board))]))]
+    (valid-it i board)))
+
+
+
+(define (select xs cont)
+  (type-case (Listof 'a) xs
+    [empty (none)]
+    [(cons x xs)
+     (type-case (Optionof 'b) (cont x)
+       [(none)   (select xs cont)]
+       [(some v) (some v)])]))
+
+(define (fail cont)
+  (none))
+
+(define (init-cont x) (some x))
+
+
+(define (append-many ls)
+  (local
+    [(define (foo l1 l2)
+       (if (empty? l1)
+           l2
+           (foo (rest l1) (append (first l1) l2))))]
+    (foo ls '())))
+
+
+
+(define (select-number n cont)
+  (select (append-many (list
+           (build-list (* n n) (lambda (i) (+ (* -2 i) 1)))
+           (build-list (* n n) (lambda (i) (- (* -2 i) 1)))
+           (build-list (* n n) (lambda (i) (+ (* 2 i) 1)))
+           (build-list (* n n) (lambda (i) (- (* 2 i) 1)))
+           (build-list (* n n) (lambda (i) (+ i 2)))
+           (build-list (* n n) (lambda (i) (- i 2)))
+           (build-list (* n n) (lambda (i) (- 2 i)))
+           (build-list (* n n) (lambda (i) (- (* -1 i) 2)))))
+          cont))
+
+
+
+
+(define (queens2 n)
+  (local
+    [(define (queens-it board left cont)
+       (if (= left 0)
+           (cont board)
+           (select-number n (lambda (i)
+             (if (valid-pos? i board)
+                 (queens-it (cons i board) (- left 1) cont)
+                 (fail cont))))))]
+    (queens-it '() (* n n) init-cont)))
+
